@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -19,12 +21,15 @@ namespace Business.Concrete
             _customerDal = customerDal;
         }
 
+        [SecuredOperation("customer.add", Priority = 1)]
+        [ValidationAspect(typeof(ColorValidator))]
         public IResult Add(Customer customer)
         {
             _customerDal.Add(customer);
             return new SuccessResult(Messages.CustomerAdded);
         }
 
+        [SecuredOperation("customer.add", Priority = 1)]
         public IResult Delete(Customer customer)
         {
             _customerDal.Delete(customer);
@@ -46,6 +51,8 @@ namespace Business.Concrete
             return new SuccessDataResult<Customer>(_customerDal.Get(c => c.UserId == userId));
         }
 
+        [SecuredOperation("customer.update", Priority = 1)]
+        [ValidationAspect(typeof(ColorValidator))]
         public IResult Update(Customer customer)
         {
             _customerDal.Update(customer);

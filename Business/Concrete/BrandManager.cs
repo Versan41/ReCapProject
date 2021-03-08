@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -18,29 +20,23 @@ namespace Business.Concrete
             _brandDal = brandDal;
         }
 
+        [SecuredOperation("brand.add", Priority = 1)]
+        [ValidationAspect(typeof(BrandValidator))]
         public IResult Add(Brand brand)
-        {
-            if (brand.BrandName.Length < 2)
-            {
-                return new ErrorResult(Messages.BrandNameInvalid);
-            }
+        {          
             _brandDal.Add(brand);
             return new SuccessResult(Messages.BrandAdded);
         }
 
+        [SecuredOperation("brand.delete", Priority = 1)]
         public IResult Delete(Brand brand)
         {
             _brandDal.Delete(brand);
-            return new Result(true, Messages.BrandDeleted);
+            return new SuccessResult(Messages.BrandDeleted);
         }
 
         public IDataResult<List<Brand>> GetAll()
         {
-            // İş kodları
-            if (DateTime.Now.Hour == 22)
-            {
-                return new ErrorDataResult<List<Brand>>(Messages.MaintenanceTime);
-            }
             return new SuccessDataResult<List<Brand>>(_brandDal.GetAll(), Messages.BrandListed);
         }
 
@@ -49,14 +45,12 @@ namespace Business.Concrete
             return new SuccessDataResult<Brand>(_brandDal.Get(b => b.BrandId == brandId));
         }
 
+        [SecuredOperation("brand.update", Priority = 1)]
+        [ValidationAspect(typeof(BrandValidator))]
         public IResult Update(Brand brand)
         {
-            if (brand.BrandName.Length < 2)
-            {
-                return new ErrorResult(Messages.BrandNameInvalid);
-            }
             _brandDal.Update(brand);
-            return new Result(true, Messages.BrandUpdated);
+            return new SuccessResult(Messages.BrandUpdated);
         }
     }
 }
