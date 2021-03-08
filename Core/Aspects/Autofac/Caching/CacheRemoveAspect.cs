@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
+using Core.CrossCuttingConcerns.Caching;
 
 namespace Core.Aspects.Autofac.Caching
 {
