@@ -11,6 +11,7 @@ namespace Core.Utilities.FileHelper
     {
         public static string AddAsync(IFormFile file)
         {
+            string path = $@"{Environment.CurrentDirectory + @"\wwwroot"}";
             var result = newPath(file);
 
             try
@@ -22,7 +23,7 @@ namespace Core.Utilities.FileHelper
                     file.CopyTo(stream);
                 }
 
-                File.Move(sourcepath, result.newPath);
+                File.Move(sourcepath,path+result);
             }
             catch (Exception exception)
             {
@@ -30,35 +31,33 @@ namespace Core.Utilities.FileHelper
                 return exception.Message;
             }
 
-            return result.Path2;
+            return result;
         }
 
         public static string UpdateAsync(string sourcePath, IFormFile file)
         {
-            var result = newPath(file);
-
+            
             try
             {
-                using (var stream = new FileStream(result.newPath, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
+                var newPath = AddAsync(file);
 
                 File.Delete(sourcePath);
+                return newPath;
             }
             catch (Exception excepiton)
             {
                 return excepiton.Message;
             }
 
-            return result.Path2;
+           
         }
 
         public static IResult DeleteAsync(string path)
         {
+            string path2 = $@"{Environment.CurrentDirectory + @"\wwwroot"}";
             try
             {
-                File.Delete(path);
+                File.Delete(path2+path);
             }
             catch (Exception exception)
             {
@@ -68,7 +67,7 @@ namespace Core.Utilities.FileHelper
             return new SuccessResult();
         }
 
-        public static (string newPath, string Path2) newPath(IFormFile file)
+        public static string  newPath(IFormFile file)
         {
             FileInfo ff = new FileInfo(file.FileName);
 
@@ -76,9 +75,9 @@ namespace Core.Utilities.FileHelper
 
             var creatingUniqueFilename = Guid.NewGuid().ToString("N") + fileExtension;
 
-            string result = $@"{Environment.CurrentDirectory + @"\wwwroot\Images"}\{creatingUniqueFilename}";
+            //string result = $@"{Environment.CurrentDirectory + @"\wwwroot\uploads"}\{creatingUniqueFilename}";
 
-            return (result, $"\\Images\\{creatingUniqueFilename}");
+            return  @"\uploads\"+creatingUniqueFilename;
         }
     }
 }
